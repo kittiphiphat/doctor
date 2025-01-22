@@ -7,7 +7,7 @@ import About from './pages/About'
 import MyProfile from './pages/MyProfile'
 import MyAppnintments from './pages/MyAppnintments'
 import Appnintments from './pages/Appnintments'
-import Navbar from './components/navbar'
+import Navbar from './components/Navbar'
 import Contact from './pages/Contact'
 import Footer from './components/Footer'
 
