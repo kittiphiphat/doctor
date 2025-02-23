@@ -63,15 +63,25 @@ const Appointments = () => {
     if (docInfo) generateSlots();
   }, [docInfo]);
 
-  const handleWheelScroll = (e) => {
-    e.preventDefault(); // Prevent default scroll behavior
-    const slider = e.currentTarget;
-    const scrollAmount = e.deltaY * 0.2; // Slow down the scroll speed
-    
-    // ใช้ requestAnimationFrame เพื่อให้การเลื่อนราบรื่น
-    requestAnimationFrame(() => {
-      slider.scrollLeft += scrollAmount;
-    });
+  const [isMouseDown, setIsMouseDown] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+
+  const handleMouseDown = (e) => {
+    setIsMouseDown(true);
+    setStartX(e.clientX);
+    setScrollLeft(e.currentTarget.scrollLeft);
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isMouseDown) return;
+    const x = e.clientX;
+    const walk = (x - startX) * 0.7; // Move by small increment
+    e.currentTarget.scrollLeft = scrollLeft - walk;
+  };
+
+  const handleMouseUp = () => {
+    setIsMouseDown(false);
   };
 
   return (
@@ -114,7 +124,10 @@ const Appointments = () => {
           <p>Booking slots</p>
           <div
             className="flex gap-3 items-center w-full overflow-x-scroll mt-4"
-            onWheel={(e) => handleWheelScroll(e)}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
           >
             {docSlots.map((daySlots, index) => (
               <div
@@ -134,13 +147,16 @@ const Appointments = () => {
 
           <div
             className="flex items-center gap-3 overflow-x-scroll mt-4 cursor-grab"
-            onWheel={(e) => handleWheelScroll(e)}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
           >
             {docSlots[slotIndex]?.map((slot, index) => (
               <button
                 key={index}
                 onClick={() => setSlotTime(slot.time)}
-                className={`text-sm font-light flex-shrink-0 px-5 py-2 rounded-full cursor-pointer transition-all duration-200 ${
+                className={`text-sm font-light shrink-0 px-5 py-2 rounded-full cursor-pointer transition-all duration-200 ${
                   slot.time === slotTime
                     ? 'bg-primary text-white'
                     : 'text-gray-700 border border-gray-400 hover:bg-gray-200'
